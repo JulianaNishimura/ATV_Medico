@@ -1,7 +1,6 @@
 package com.example.ATV_Medico_Back.service;
 
 import com.example.ATV_Medico_Back.model.Paciente;
-import com.example.ATV_Medico_Back.model.Medico;
 import com.example.ATV_Medico_Back.repository.PacienteRepository;
 import com.example.ATV_Medico_Back.repository.MedicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;

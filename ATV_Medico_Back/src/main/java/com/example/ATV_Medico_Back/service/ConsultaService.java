@@ -1,8 +1,6 @@
 package com.example.ATV_Medico_Back.service;
 
 import com.example.ATV_Medico_Back.model.Consulta;
-import com.example.ATV_Medico_Back.model.Medico;
-import com.example.ATV_Medico_Back.model.Paciente;
 import com.example.ATV_Medico_Back.repository.ConsultaRepository;
 import com.example.ATV_Medico_Back.repository.MedicoRepository;
 import com.example.ATV_Medico_Back.repository.PacienteRepository;
