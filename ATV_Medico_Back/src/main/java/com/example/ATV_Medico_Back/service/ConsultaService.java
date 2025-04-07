@@ -2,7 +2,6 @@ package com.example.ATV_Medico_Back.service;
 
 import com.example.ATV_Medico_Back.dto.ConsultaDTO;
 import com.example.ATV_Medico_Back.model.Consulta;
-import com.example.ATV_Medico_Back.model.Medico;
 import com.example.ATV_Medico_Back.model.Paciente;
 import com.example.ATV_Medico_Back.repository.ConsultaRepository;
 import com.example.ATV_Medico_Back.repository.MedicoRepository;
@@ -28,13 +27,6 @@ public class ConsultaService {
 
     public List<ConsultaDTO> listarTodas() {
         return consultaRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
-    }
-
-    public List<ConsultaDTO> listarPorMedico(Long medicoId) {
-        if (!medicoRepository.existsById(medicoId)) {
-            throw new IllegalArgumentException("Médico com ID " + medicoId + " não encontrado.");
-        }
-        return consultaRepository.findByMedicoId(medicoId).stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     public List<ConsultaDTO> listarPorPaciente(Long pacienteId) {

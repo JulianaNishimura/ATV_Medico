@@ -20,15 +20,6 @@ public class ConsultaController {
         return ResponseEntity.ok(consultaService.listarTodas());
     }
 
-    @GetMapping("/medico/{medicoId}")
-    public ResponseEntity<List<ConsultaDTO>> listarConsultasPorMedico(@PathVariable Long medicoId) {
-        try {
-            return ResponseEntity.ok(consultaService.listarPorMedico(medicoId));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
     @GetMapping("/paciente/{pacienteId}")
     public ResponseEntity<List<ConsultaDTO>> listarConsultasPorPaciente(@PathVariable Long pacienteId) {
         try {
