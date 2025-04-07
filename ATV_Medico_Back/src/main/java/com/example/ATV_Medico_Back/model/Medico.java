@@ -47,6 +47,9 @@ public class Medico {
     @Column(name = "salario")
     private Double salario;
 
+    @Column(name = "crm", nullable = false, unique = true)
+    private String crm;
+
     // Método auxiliar para adicionar paciente
     public void adicionarPaciente(Paciente paciente) {
         pacientes.add(paciente);
