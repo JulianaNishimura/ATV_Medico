@@ -21,10 +21,34 @@
                         <th>CPF</th>
                         <th>Idade</th>
                         <th>Médico</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
+        </section>
+
+        <section>
+            <h2>Cadastro / Edição de Paciente</h2>
+            <form id="paciente-form">
+                <input type="hidden" id="paciente-id">
+
+                <label for="paciente-nome">Nome:</label>
+                <input type="text" id="paciente-nome" required>
+
+                <label for="paciente-cpf">CPF:</label>
+                <input type="text" id="paciente-cpf" required>
+
+                <label for="paciente-idade">Idade:</label>
+                <input type="number" id="paciente-idade" required>
+
+                <label for="paciente-medico-id">ID do Médico:</label>
+                <input type="number" id="paciente-medico-id" required>
+
+                <button type="submit">Salvar</button>
+            </form>
+
+            <p id="mensagem"></p>
         </section>
     </main>
     <script src="js/pacientes.js"></script>
