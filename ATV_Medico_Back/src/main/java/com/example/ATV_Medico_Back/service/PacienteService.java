@@ -1,8 +1,9 @@
 package com.example.ATV_Medico_Back.service;
 
+import com.example.ATV_Medico_Back.model.Medico;
 import com.example.ATV_Medico_Back.model.Paciente;
-import com.example.ATV_Medico_Back.repository.PacienteRepository;
 import com.example.ATV_Medico_Back.repository.MedicoRepository;
+import com.example.ATV_Medico_Back.repository.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ public class PacienteService {
 
     // Salva um novo paciente com validações
     public String salvarPaciente(Paciente paciente) {
-        // Verifica se o CPF é válido
+        // Valida CPF
         if (paciente.getCpf() == null || paciente.getCpf().length() != 11 || !paciente.getCpf().matches("\\d+")) {
             throw new IllegalArgumentException("O CPF deve conter exatamente 11 dígitos numéricos.");
         }
@@ -33,17 +34,10 @@ public class PacienteService {
             throw new IllegalArgumentException("Já existe um paciente cadastrado com o CPF: " + paciente.getCpf());
         }
 
-        // Verifica se o médico existe
-        if (paciente.getMedico() == null || !medicoRepository.existsById(paciente.getMedico().getId())) {
-            throw new IllegalArgumentException("Médico inválido ou não encontrado.");
-        }
-
-        // Verifica se a data de nascimento é válida
+        // Valida data de nascimento
         if (paciente.getDataNascimento() == null || paciente.getDataNascimento().isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("A data de nascimento deve ser válida e anterior à data atual.");
         }
-
-
 
         pacienteRepository.save(paciente);
         return "Paciente cadastrado com sucesso!";
@@ -54,7 +48,7 @@ public class PacienteService {
         Paciente paciente = pacienteRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Paciente com ID " + id + " não encontrado."));
 
-        // Verifica se o CPF foi alterado e se já existe
+        // CPF
         if (pacienteAtualizado.getCpf() != null && !paciente.getCpf().equals(pacienteAtualizado.getCpf())) {
             if (pacienteRepository.findByCpf(pacienteAtualizado.getCpf()).isPresent()) {
                 throw new IllegalArgumentException("O CPF " + pacienteAtualizado.getCpf() + " já está em uso por outro paciente.");
@@ -65,20 +59,19 @@ public class PacienteService {
             paciente.setCpf(pacienteAtualizado.getCpf());
         }
 
-        // Verifica se o médico foi alterado e existe
-        if (pacienteAtualizado.getMedico() != null && !medicoRepository.existsById(pacienteAtualizado.getMedico().getId())) {
-            throw new IllegalArgumentException("Médico inválido ou não encontrado.");
+        // Nome
+        if (pacienteAtualizado.getNome() != null) {
+            paciente.setNome(pacienteAtualizado.getNome());
         }
 
-        // Atualiza os campos
-        if (pacienteAtualizado.getNome() != null) paciente.setNome(pacienteAtualizado.getNome());
+        // Data de nascimento
         if (pacienteAtualizado.getDataNascimento() != null) {
             if (pacienteAtualizado.getDataNascimento().isAfter(LocalDate.now())) {
                 throw new IllegalArgumentException("A data de nascimento deve ser anterior à data atual.");
             }
             paciente.setDataNascimento(pacienteAtualizado.getDataNascimento());
         }
-        if (pacienteAtualizado.getMedico() != null) paciente.setMedico(pacienteAtualizado.getMedico());
+
 
         pacienteRepository.save(paciente);
         return "Paciente atualizado com sucesso!";

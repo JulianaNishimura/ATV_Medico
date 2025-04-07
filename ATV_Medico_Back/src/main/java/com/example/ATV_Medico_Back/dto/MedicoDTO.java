@@ -2,6 +2,7 @@ package com.example.ATV_Medico_Back.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Data // Gera getters, setters, toString, equals e hashCode
@@ -10,6 +11,7 @@ import lombok.*;
 @Getter
 @Setter
 public class MedicoDTO {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
     private Integer numeroConsultorio;
     private String nome;
