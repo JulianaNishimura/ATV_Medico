@@ -24,8 +24,7 @@ public class Medico {
     @Column(name = "numero_consultorio", nullable = false)
     private Integer numeroConsultorio; // RQ1
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "medico_id") // cria a coluna na tabela consulta
+    @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL)
     private List<Consulta> consultas = new ArrayList<>();
 
     @Column(name = "nome", nullable = false)

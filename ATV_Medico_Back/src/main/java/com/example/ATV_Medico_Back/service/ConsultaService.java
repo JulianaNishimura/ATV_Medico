@@ -40,6 +40,14 @@ public class ConsultaService {
         Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
                 .orElseThrow(() -> new IllegalArgumentException("Paciente inválido ou não encontrado."));
 
+        // Novo trecho: buscar médico
+        if (dto.getMedicoId() == null) {
+            throw new IllegalArgumentException("O ID do médico é obrigatório.");
+        }
+
+        var medico = medicoRepository.findById(dto.getMedicoId())
+                .orElseThrow(() -> new IllegalArgumentException("Médico inválido ou não encontrado."));
+
         if (dto.getDataHora() != null && dto.getDataHora().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("A data da consulta deve ser futura.");
         }
@@ -51,6 +59,7 @@ public class ConsultaService {
 
         Consulta consulta = new Consulta();
         consulta.setPaciente(paciente);
+        consulta.setMedico(medico); // <-- setar o médico aqui
         consulta.setDataHora(dto.getDataHora());
         consulta.setConsultorio(dto.getConsultorio());
         consulta.setValor(dto.getValor());
@@ -59,6 +68,7 @@ public class ConsultaService {
         consultaRepository.save(consulta);
         return "Consulta cadastrada com sucesso!";
     }
+
 
     public String atualizarConsulta(Long id, ConsultaDTO dto) {
         Consulta consulta = consultaRepository.findById(id)
@@ -72,14 +82,24 @@ public class ConsultaService {
             Paciente paciente = pacienteRepository.findById(dto.getPacienteId()).get();
             consulta.setPaciente(paciente);
         }
+
+        // Novo: Atualizar médico se vier no DTO
+        if (dto.getMedicoId() != null) {
+            var medico = medicoRepository.findById(dto.getMedicoId())
+                    .orElseThrow(() -> new IllegalArgumentException("Médico com ID " + dto.getMedicoId() + " não encontrado."));
+            consulta.setMedico(medico);
+        }
+
         if (dto.getDataHora() != null) {
             if (dto.getDataHora().isBefore(LocalDateTime.now())) {
                 throw new IllegalArgumentException("A data da consulta deve ser futura.");
             }
             consulta.setDataHora(dto.getDataHora());
         }
+
         if (dto.getConsultorio() != null) consulta.setConsultorio(dto.getConsultorio());
         if (dto.getValor() != null) consulta.setValor(dto.getValor());
+
         if (dto.getDataRetorno() != null) {
             if (consulta.getDataHora() != null && dto.getDataRetorno().isBefore(consulta.getDataHora())) {
                 throw new IllegalArgumentException("A data de retorno deve ser posterior à data da consulta.");
@@ -90,6 +110,7 @@ public class ConsultaService {
         consultaRepository.save(consulta);
         return "Consulta atualizada com sucesso!";
     }
+
 
     public String deletarConsulta(Long id) {
         Consulta consulta = consultaRepository.findById(id)
@@ -102,6 +123,7 @@ public class ConsultaService {
         ConsultaDTO dto = new ConsultaDTO();
         dto.setId(consulta.getId());
         dto.setPacienteId(consulta.getPaciente().getId());
+        dto.setMedicoId(consulta.getMedico().getId()); // <-- novo
         dto.setDataHora(consulta.getDataHora());
         dto.setConsultorio(consulta.getConsultorio());
         dto.setValor(consulta.getValor());

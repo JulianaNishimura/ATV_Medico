@@ -19,6 +19,10 @@ public class Consulta {
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
 
+    @ManyToOne
+    @JoinColumn(name = "medico_id")
+    private Medico medico;
+
     @Column(name = "data_hora", nullable = false)
     private LocalDateTime dataHora; // RQ2: Agendar em horários diferentes
 

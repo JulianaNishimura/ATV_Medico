@@ -17,6 +17,7 @@ public class ConsultaDTO {
     private String consultorio;
     private Double valor;
     private LocalDateTime dataRetorno;
+    private Long medicoId;
     private Long pacienteId;
 
     // Getters e Setters
