@@ -1,6 +1,6 @@
 package com.example.ATV_Medico_Back.controller;
 
-import com.example.ATV_Medico_Back.model.Consulta;
+import com.example.ATV_Medico_Back.dto.ConsultaDTO;
 import com.example.ATV_Medico_Back.service.ConsultaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,58 +15,49 @@ public class ConsultaController {
     @Autowired
     private ConsultaService consultaService;
 
-    // GET: Retorna a lista de todas as consultas
     @GetMapping
-    public ResponseEntity<List<Consulta>> listarConsultas() {
-        List<Consulta> consultas = consultaService.listarTodas();
-        return ResponseEntity.ok(consultas);
+    public ResponseEntity<List<ConsultaDTO>> listarConsultas() {
+        return ResponseEntity.ok(consultaService.listarTodas());
     }
 
-    // GET: Retorna a lista de consultas por médico
     @GetMapping("/medico/{medicoId}")
-    public ResponseEntity<List<Consulta>> listarConsultasPorMedico(@PathVariable Long medicoId) {
+    public ResponseEntity<List<ConsultaDTO>> listarConsultasPorMedico(@PathVariable Long medicoId) {
         try {
-            List<Consulta> consultas = consultaService.listarPorMedico(medicoId);
-            return ResponseEntity.ok(consultas);
+            return ResponseEntity.ok(consultaService.listarPorMedico(medicoId));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().build();
         }
     }
 
-    // GET: Retorna a lista de consultas por paciente (histórico)
     @GetMapping("/paciente/{pacienteId}")
-    public ResponseEntity<List<Consulta>> listarConsultasPorPaciente(@PathVariable Long pacienteId) {
+    public ResponseEntity<List<ConsultaDTO>> listarConsultasPorPaciente(@PathVariable Long pacienteId) {
         try {
-            List<Consulta> consultas = consultaService.listarPorPaciente(pacienteId);
-            return ResponseEntity.ok(consultas);
+            return ResponseEntity.ok(consultaService.listarPorPaciente(pacienteId));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().build();
         }
     }
 
-    // POST: Cria uma nova consulta
     @PostMapping
-    public ResponseEntity<String> criarConsulta(@RequestBody Consulta consulta) {
+    public ResponseEntity<String> criarConsulta(@RequestBody ConsultaDTO dto) {
         try {
-            String resultado = consultaService.salvarConsulta(consulta);
+            String resultado = consultaService.salvarConsulta(dto);
             return ResponseEntity.ok(resultado);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // PUT: Atualiza uma consulta existente
     @PutMapping("/{id}")
-    public ResponseEntity<String> atualizarConsulta(@PathVariable Long id, @RequestBody Consulta consulta) {
+    public ResponseEntity<String> atualizarConsulta(@PathVariable Long id, @RequestBody ConsultaDTO dto) {
         try {
-            String resultado = consultaService.atualizarConsulta(id, consulta);
+            String resultado = consultaService.atualizarConsulta(id, dto);
             return ResponseEntity.ok(resultado);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // DELETE: Remove uma consulta
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletarConsulta(@PathVariable Long id) {
         try {

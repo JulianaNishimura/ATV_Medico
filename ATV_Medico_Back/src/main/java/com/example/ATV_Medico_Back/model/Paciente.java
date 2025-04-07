@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "paciente")
@@ -28,13 +27,6 @@ public class Paciente {
 
     @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
-
-    @ManyToOne
-    @JoinColumn(name = "medico_id", nullable = false)
-    private Medico medico; // Relacionamento com o médico responsável pelo paciente (RQ3)
-
-    @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Consulta> consultas; // RQ4: Histórico do paciente
 
     public int getIdade() {
         return LocalDate.now().getYear() - dataNascimento.getYear();

@@ -1,15 +1,15 @@
 package com.example.ATV_Medico_Back.service;
 
-import com.example.ATV_Medico_Back.model.Consulta;
+import com.example.ATV_Medico_Back.dto.MedicoDTO;
 import com.example.ATV_Medico_Back.model.Medico;
 import com.example.ATV_Medico_Back.model.Paciente;
 import com.example.ATV_Medico_Back.repository.MedicoRepository;
 import com.example.ATV_Medico_Back.repository.PacienteRepository;
-import com.example.ATV_Medico_Back.repository.ConsultaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MedicoService {
@@ -20,44 +20,59 @@ public class MedicoService {
     @Autowired
     private PacienteRepository pacienteRepository;
 
-    @Autowired
-    private ConsultaRepository consultaRepository;
-
-    // Lista todos os médicos
-    public List<Medico> listarTodos() {
-        return medicoRepository.findAll();
+    // Lista todos os médicos como DTOs
+    public List<MedicoDTO> listarTodos() {
+        return medicoRepository.findAll().stream().map(medico -> {
+            MedicoDTO dto = new MedicoDTO();
+            dto.setId(medico.getId());
+            dto.setNome(medico.getNome());
+            dto.setEspecialidade(medico.getEspecialidade());
+            dto.setNumeroConsultorio(medico.getNumeroConsultorio());
+            dto.setValorConsulta(medico.getValorConsulta());
+            dto.setSalario(medico.getSalario());
+            dto.setCrm(medico.getCrm());
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     // Salva um novo médico com validação de CRM
-    public String salvarMedico(Medico medico) {
-        if (medico.getCrm() == null || medico.getCrm().isEmpty()) {
+    public String salvarMedico(MedicoDTO dto) {
+        if (dto.getCrm() == null || dto.getCrm().isEmpty()) {
             throw new IllegalArgumentException("O CRM é obrigatório.");
         }
-        if (medicoRepository.findByCrm(medico.getCrm()) != null) {
-            throw new IllegalArgumentException("Já existe um médico cadastrado com o CRM: " + medico.getCrm());
+        if (medicoRepository.findByCrm(dto.getCrm()) != null) {
+            throw new IllegalArgumentException("Já existe um médico cadastrado com o CRM: " + dto.getCrm());
         }
+
+        Medico medico = new Medico();
+        medico.setNome(dto.getNome());
+        medico.setEspecialidade(dto.getEspecialidade());
+        medico.setNumeroConsultorio(dto.getNumeroConsultorio());
+        medico.setValorConsulta(dto.getValorConsulta());
+        medico.setSalario(dto.getSalario());
+        medico.setCrm(dto.getCrm());
+
         medicoRepository.save(medico);
         return "Médico cadastrado com sucesso!";
     }
 
     // Atualiza um médico existente
-    public String atualizarMedico(Long id, Medico medicoAtualizado) {
+    public String atualizarMedico(Long id, MedicoDTO dto) {
         Medico medico = medicoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Médico com ID " + id + " não encontrado."));
 
-        // Verifica se o CRM foi alterado e se já existe
-        if (!medico.getCrm().equals(medicoAtualizado.getCrm())) {
-            if (medicoRepository.findByCrm(medicoAtualizado.getCrm()) != null) {
-                throw new IllegalArgumentException("O CRM " + medicoAtualizado.getCrm() + " já está em uso por outro médico.");
+        if (!medico.getCrm().equals(dto.getCrm())) {
+            if (medicoRepository.findByCrm(dto.getCrm()) != null) {
+                throw new IllegalArgumentException("O CRM " + dto.getCrm() + " já está em uso por outro médico.");
             }
         }
 
-        medico.setNome(medicoAtualizado.getNome());
-        medico.setEspecialidade(medicoAtualizado.getEspecialidade());
-        medico.setNumeroConsultorio(medicoAtualizado.getNumeroConsultorio());
-        medico.setValorConsulta(medicoAtualizado.getValorConsulta());
-        medico.setSalario(medicoAtualizado.getSalario());
-        medico.setCrm(medicoAtualizado.getCrm());
+        medico.setNome(dto.getNome());
+        medico.setEspecialidade(dto.getEspecialidade());
+        medico.setNumeroConsultorio(dto.getNumeroConsultorio());
+        medico.setValorConsulta(dto.getValorConsulta());
+        medico.setSalario(dto.getSalario());
+        medico.setCrm(dto.getCrm());
 
         medicoRepository.save(medico);
         return "Médico atualizado com sucesso!";
@@ -79,21 +94,4 @@ public class MedicoService {
                 .orElseThrow(() -> new IllegalArgumentException("Paciente com ID " + pacienteId + " não encontrado."));
 
         medico.adicionarPaciente(paciente);
-        medicoRepository.save(medico);
-        return "Paciente adicionado ao médico com sucesso!";
-    }
-
-    // Adiciona uma consulta ao médico
-    public String adicionarConsulta(Long medicoId, Consulta consulta) {
-        Medico medico = medicoRepository.findById(medicoId)
-                .orElseThrow(() -> new IllegalArgumentException("Médico com ID " + medicoId + " não encontrado."));
-
-        if (consulta.getPaciente() == null || !pacienteRepository.existsById(consulta.getPaciente().getId())) {
-            throw new IllegalArgumentException("Paciente inválido ou não encontrado.");
-        }
-
-        medico.adicionarConsulta(consulta);
-        medicoRepository.save(medico);
-        return "Consulta adicionada ao médico com sucesso!";
-    }
-}
+        medicoRepository.save(m
