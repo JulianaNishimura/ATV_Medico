@@ -22,7 +22,8 @@
                         <th>Data/Hora</th>
                         <th>Consultório</th>
                         <th>Valor</th>
-                        <th>Data Retorno</th>
+                        <th>Retorno</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -30,27 +31,29 @@
         </section>
 
         <section>
-            <h2>Agendar Nova Consulta</h2>
+            <h2>Cadastro / Edição de Consulta</h2>
             <form id="consulta-form">
-                <label for="medico-id">Médico (ID):</label>
-                <input type="number" id="medico-id" name="medico-id" required>
-                
-                <label for="paciente-id">Paciente (ID):</label>
-                <input type="number" id="paciente-id" name="paciente-id" required>
-                
+                <input type="hidden" id="consulta-id">
+
+                <label for="medico-id">ID do Médico:</label>
+                <input type="number" id="medico-id" required>
+
+                <label for="paciente-id">ID do Paciente:</label>
+                <input type="number" id="paciente-id" required>
+
                 <label for="data-hora">Data e Hora:</label>
-                <input type="datetime-local" id="data-hora" name="data-hora" required>
-                
+                <input type="datetime-local" id="data-hora" required>
+
                 <label for="consultorio">Consultório:</label>
-                <input type="text" id="consultorio" name="consultorio">
-                
-                <label for="valor">Valor (R$):</label>
-                <input type="number" id="valor" name="valor" step="0.01">
-                
+                <input type="text" id="consultorio">
+
+                <label for="valor">Valor:</label>
+                <input type="number" id="valor" step="0.01">
+
                 <label for="data-retorno">Data de Retorno:</label>
-                <input type="datetime-local" id="data-retorno" name="data-retorno">
-                
-                <button type="submit">Agendar Consulta</button>
+                <input type="datetime-local" id="data-retorno">
+
+                <button type="submit">Salvar Consulta</button>
             </form>
             <p id="mensagem"></p>
         </section>
