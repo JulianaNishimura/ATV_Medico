@@ -1,4 +1,5 @@
 package com.example.ATV_Medico_Back.controller;
+import com.example.ATV_Medico_Back.model.Consulta;
 import com.example.ATV_Medico_Back.model.Medico;
 import com.example.ATV_Medico_Back.service.MedicoService;
 import org.springframework.beans.factory.annotation.Autowired;
