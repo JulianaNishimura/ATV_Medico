@@ -28,7 +28,6 @@ public class MedicoService {
             dto.setNome(medico.getNome());
             dto.setEspecialidade(medico.getEspecialidade());
             dto.setNumeroConsultorio(medico.getNumeroConsultorio());
-            dto.setValorConsulta(medico.getValorConsulta());
             dto.setSalario(medico.getSalario());
             dto.setCrm(medico.getCrm());
             return dto;
@@ -48,7 +47,6 @@ public class MedicoService {
         medico.setNome(dto.getNome());
         medico.setEspecialidade(dto.getEspecialidade());
         medico.setNumeroConsultorio(dto.getNumeroConsultorio());
-        medico.setValorConsulta(dto.getValorConsulta());
         medico.setSalario(dto.getSalario());
         medico.setCrm(dto.getCrm());
 
@@ -70,7 +68,6 @@ public class MedicoService {
         medico.setNome(dto.getNome());
         medico.setEspecialidade(dto.getEspecialidade());
         medico.setNumeroConsultorio(dto.getNumeroConsultorio());
-        medico.setValorConsulta(dto.getValorConsulta());
         medico.setSalario(dto.getSalario());
         medico.setCrm(dto.getCrm());
 
@@ -94,4 +91,7 @@ public class MedicoService {
                 .orElseThrow(() -> new IllegalArgumentException("Paciente com ID " + pacienteId + " não encontrado."));
 
         medico.adicionarPaciente(paciente);
-        medicoRepository.save(m
+        medicoRepository.save(medico);
+        return "Paciente adicionado ao médico com sucesso!";
+    }
+}

@@ -33,9 +33,6 @@ public class Medico {
     @Column(name = "especialidade")
     private String especialidade;
 
-    @Column(name = "valor_consulta")
-    private Double valorConsulta; // RQ6
-
     @Column(name = "salario")
     private Double salario;
 
