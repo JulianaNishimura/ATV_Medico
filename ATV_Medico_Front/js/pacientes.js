@@ -1,3 +1,14 @@
+let mapaMedicos = {};
+async function carregarMapaMedicos() {
+    try {
+        const response = await fetch(`${baseUrl}/medicos`);
+        const medicos = await response.json();
+        medicos.forEach(m => mapaMedicos[m.id] = m.nome);
+    } catch (error) {
+        console.error("Erro ao carregar médicos:", error.message);
+    }
+}
+
 const baseUrl = "http://localhost:8080/api";
 
 // GET: Carregar pacientes
@@ -14,8 +25,8 @@ async function carregarPacientes() {
                 <td>${paciente.id}</td>
                 <td>${paciente.nome}</td>
                 <td>${paciente.cpf}</td>
-                <td>${paciente.idade}</td>
-                <td>${paciente.medico.nome} (ID: ${paciente.medico.id})</td>
+                <td>${calcularIdade(paciente.dataNascimento)} anos</td>
+                <td>${mapaMedicos[paciente.medicoId] || ""}</td>
                 <td>
                     <button onclick="editarPaciente(${paciente.id})">✏️</button>
                     <button onclick="deletarPaciente(${paciente.id})">🗑️</button>
@@ -35,15 +46,15 @@ document.getElementById("paciente-form").addEventListener("submit", async (e) =>
     const id = document.getElementById("paciente-id").value;
     const nome = document.getElementById("paciente-nome").value;
     const cpf = document.getElementById("paciente-cpf").value;
-    const idade = document.getElementById("paciente-idade").value;
+    const dataNascimento = document.getElementById("paciente-data-nascimento").value;
     const medicoId = document.getElementById("paciente-medico-id").value;
 
     const paciente = {
         nome,
         cpf,
-        idade,
-        medico: { id: medicoId }
-    };
+        dataNascimento: dataNascimento,
+        medicoId: parseInt(medicoId)
+    };    
 
     try {
         let method = "POST";
@@ -79,7 +90,7 @@ async function editarPaciente(id) {
         document.getElementById("paciente-id").value = paciente.id;
         document.getElementById("paciente-nome").value = paciente.nome;
         document.getElementById("paciente-cpf").value = paciente.cpf;
-        document.getElementById("paciente-idade").value = paciente.idade;
+        document.getElementById("paciente-data-nascimento").value = paciente.dataNascimento;
         document.getElementById("paciente-medico-id").value = paciente.medico.id;
     } catch (error) {
         console.error("Erro ao carregar paciente:", error.message);
@@ -99,5 +110,21 @@ async function deletarPaciente(id) {
     }
 }
 
+function calcularIdade(dataNascimento) {
+    const hoje = new Date();
+    const nascimento = new Date(dataNascimento);
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const mes = hoje.getMonth() - nascimento.getMonth();
+    if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+        idade--;
+    }
+    return idade;
+}
+
+
 // Ao carregar a página
-window.onload = carregarPacientes;
+window.onload = async () => {
+    await carregarMapaMedicos();
+    carregarPacientes();
+};
+

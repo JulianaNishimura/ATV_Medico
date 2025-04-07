@@ -1,3 +1,25 @@
+let mapaMedicos = {};
+let mapaPacientes = {};
+
+async function carregarMapas() {
+    try {
+        const [medicosResp, pacientesResp] = await Promise.all([
+            fetch(`${baseUrl}/medicos`),
+            fetch(`${baseUrl}/pacientes`)
+        ]);
+
+        const [medicos, pacientes] = await Promise.all([
+            medicosResp.json(),
+            pacientesResp.json()
+        ]);
+
+        medicos.forEach(m => mapaMedicos[m.id] = m.nome);
+        pacientes.forEach(p => mapaPacientes[p.id] = p.nome);
+    } catch (error) {
+        console.error("Erro ao carregar médicos ou pacientes:", error);
+    }
+}
+
 const baseUrl = "http://localhost:8080/api";
 
 async function carregarConsultas() {
@@ -11,8 +33,8 @@ async function carregarConsultas() {
             const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td>${consulta.id}</td>
-                <td>${consulta.medico.nome} (ID: ${consulta.medico.id})</td>
-                <td>${consulta.paciente.nome} (ID: ${consulta.paciente.id})</td>
+                <td>${mapaMedicos[consulta.medicoId] || "Desconhecido"} (ID: ${consulta.medicoId})</td>
+                <td>${mapaPacientes[consulta.pacienteId] || "Desconhecido"} (ID: ${consulta.pacienteId})</td>
                 <td>${new Date(consulta.dataHora).toLocaleString()}</td>
                 <td>${consulta.consultorio || "N/A"}</td>
                 <td>${consulta.valor ? `R$ ${consulta.valor.toFixed(2)}` : "N/A"}</td>
@@ -41,13 +63,13 @@ document.getElementById("consulta-form").addEventListener("submit", async (e) =>
     const dataRetorno = document.getElementById("data-retorno").value;
 
     const consulta = {
-        medico: { id: medicoId },
-        paciente: { id: pacienteId },
+        medicoId: parseInt(medicoId),
+        pacienteId: parseInt(pacienteId),
         dataHora: new Date(dataHora).toISOString(),
         consultorio: consultorio || null,
         valor: valor ? parseFloat(valor) : null,
         dataRetorno: dataRetorno ? new Date(dataRetorno).toISOString() : null
-    };
+    };    
 
     try {
         const url = id ? `${baseUrl}/consultas/${id}` : `${baseUrl}/consultas`;
@@ -106,4 +128,8 @@ async function deletarConsulta(id) {
     }
 }
 
-window.onload = carregarConsultas;
+window.onload = async () => {
+    await carregarMapas();
+    carregarConsultas();
+};
+
