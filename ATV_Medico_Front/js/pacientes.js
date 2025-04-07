@@ -15,7 +15,6 @@ async function carregarPacientes() {
                 <td>${paciente.nome}</td>
                 <td>${paciente.cpf}</td>
                 <td>${paciente.idade}</td>
-                <td>${paciente.medico.nome} (ID: ${paciente.medico.id})</td>
                 <td>
                     <button onclick="editarPaciente(${paciente.id})">✏️</button>
                     <button onclick="deletarPaciente(${paciente.id})">🗑️</button>
