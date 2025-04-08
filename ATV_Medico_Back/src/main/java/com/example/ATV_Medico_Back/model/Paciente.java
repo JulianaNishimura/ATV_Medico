@@ -30,7 +30,4 @@ public class Paciente {
     @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
 
-    public int getIdade() {
-        return LocalDate.now().getYear() - dataNascimento.getYear();
-    }
 }
