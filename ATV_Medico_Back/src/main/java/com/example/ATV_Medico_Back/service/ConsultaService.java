@@ -61,7 +61,6 @@ public class ConsultaService {
         consulta.setPaciente(paciente);
         consulta.setMedico(medico); // <-- setar o médico aqui
         consulta.setDataHora(dto.getDataHora());
-        consulta.setConsultorio(dto.getConsultorio());
         consulta.setValor(dto.getValor());
         consulta.setDataRetorno(dto.getDataRetorno());
 
@@ -97,7 +96,6 @@ public class ConsultaService {
             consulta.setDataHora(dto.getDataHora());
         }
 
-        if (dto.getConsultorio() != null) consulta.setConsultorio(dto.getConsultorio());
         if (dto.getValor() != null) consulta.setValor(dto.getValor());
 
         if (dto.getDataRetorno() != null) {
@@ -125,7 +123,6 @@ public class ConsultaService {
         dto.setPacienteId(consulta.getPaciente().getId());
         dto.setMedicoId(consulta.getMedico().getId()); // <-- novo
         dto.setDataHora(consulta.getDataHora());
-        dto.setConsultorio(consulta.getConsultorio());
         dto.setValor(consulta.getValor());
         dto.setDataRetorno(consulta.getDataRetorno());
         return dto;

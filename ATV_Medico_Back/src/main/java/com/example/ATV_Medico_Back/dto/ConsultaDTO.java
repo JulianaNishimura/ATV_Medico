@@ -14,7 +14,6 @@ public class ConsultaDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
     private LocalDateTime dataHora;
-    private String consultorio;
     private Double valor;
     private LocalDateTime dataRetorno;
     private Long medicoId;

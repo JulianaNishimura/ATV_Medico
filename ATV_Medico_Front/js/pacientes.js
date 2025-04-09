@@ -2,6 +2,10 @@ const baseUrl = 'http://localhost:8080/api';
 
 async function carregarPacientes() {
   try {
+    // 🔹 Carrega todos os médicos primeiro
+    const resMedicos = await fetch(`${baseUrl}/medicos`);
+    const medicos = resMedicos.ok ? await resMedicos.json() : [];
+
     const response = await fetch(`${baseUrl}/pacientes`);
     if (!response.ok) throw new Error('Erro ao buscar pacientes.');
     const pacientes = await response.json();
@@ -13,7 +17,6 @@ async function carregarPacientes() {
       let nomeMedico = 'Sem médico ainda';
 
       try {
-        // 1. Buscar as consultas do paciente
         const resConsultas = await fetch(
           `${baseUrl}/consultas/paciente/${paciente.id}`
         );
@@ -21,18 +24,16 @@ async function carregarPacientes() {
           const consultas = await resConsultas.json();
 
           if (consultas.length > 0) {
-            // 2. Ordenar por data mais recente
             consultas.sort(
               (a, b) => new Date(b.dataHora) - new Date(a.dataHora)
             );
 
-            const medicoId = consultas[0].medico;
+            const medicoId = consultas[0].medicoId;
 
-            // 3. Buscar o nome do médico via ID
-            const resMedico = await fetch(`${baseUrl}/medicos/${medicoId}`);
-            if (resMedico.ok) {
-              const medico = await resMedico.json();
-              nomeMedico = medico.nome || 'Desconhecido';
+            // 🔹 Busca localmente o médico pelo ID
+            const medico = medicos.find((m) => m.id === medicoId);
+            if (medico) {
+              nomeMedico = `${medico.nome} (ID: ${medico.id})`;
             }
           }
         }
@@ -61,25 +62,23 @@ async function carregarPacientes() {
   }
 }
 
-// POST: Cadastrar novo paciente
 document
   .getElementById('paciente-form')
   .addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    // Adiciona isso aqui:
     const id = document.getElementById('paciente-id').value;
     const nome = document.getElementById('paciente-nome').value;
     const cpf = document.getElementById('paciente-cpf').value;
     const dataNascimento = document.getElementById(
       'paciente-data-nascimento'
     ).value;
-    const medicoId = document.getElementById('paciente-medico-id').value;
 
     const paciente = {
       nome,
       cpf,
-      dataNascimento: dataNascimento,
-      medicoId: parseInt(medicoId),
+      dataNascimento,
     };
 
     try {
@@ -97,7 +96,10 @@ document
         body: JSON.stringify(paciente),
       });
 
-      if (!response.ok) throw new Error('Erro ao salvar paciente.');
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Erro ao salvar paciente.');
+      }
       document.getElementById('mensagem').textContent = id
         ? 'Paciente atualizado!'
         : 'Paciente cadastrado!';
@@ -121,7 +123,6 @@ async function editarPaciente(id) {
     document.getElementById('paciente-cpf').value = paciente.cpf;
     document.getElementById('paciente-data-nascimento').value =
       paciente.dataNascimento;
-    document.getElementById('paciente-medico-id').value = paciente.medico.id;
   } catch (error) {
     console.error('Erro ao carregar paciente:', error.message);
   }
@@ -155,6 +156,5 @@ function calcularIdade(dataNascimento) {
 
 // Ao carregar a página
 window.onload = async () => {
-  await carregarMapaMedicos();
   carregarPacientes();
 };

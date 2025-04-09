@@ -26,9 +26,6 @@ public class Consulta {
     @Column(name = "data_hora", nullable = false)
     private LocalDateTime dataHora; // RQ2: Agendar em horários diferentes
 
-    @Column(name = "consultorio")
-    private String consultorio; // RQ1: Gerir consultório
-
     @Column(name = "valor")
     private Double valor; // RQ6: Relatório financeiro
 
