@@ -1,6 +1,6 @@
 package com.example.ATV_Medico_Back.controller;
 
-import com.example.ATV_Medico_Back.model.Paciente;
+import com.example.ATV_Medico_Back.entity.Paciente;
 import com.example.ATV_Medico_Back.service.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

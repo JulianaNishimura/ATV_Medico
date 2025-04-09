@@ -1,4 +1,4 @@
-package com.example.ATV_Medico_Back.model;
+package com.example.ATV_Medico_Back.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

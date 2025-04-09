@@ -1,4 +1,4 @@
-package com.example.ATV_Medico_Back.model;
+package com.example.ATV_Medico_Back.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

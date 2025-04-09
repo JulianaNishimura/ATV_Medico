@@ -1,6 +1,6 @@
 package com.example.ATV_Medico_Back.repository;
 
-import com.example.ATV_Medico_Back.model.Paciente;
+import com.example.ATV_Medico_Back.entity.Paciente;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
