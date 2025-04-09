@@ -1,10 +1,10 @@
 const baseUrl = "http://localhost:8080/api/medicos";
 
+// carregar todos os médicos e preencher a tabela
 async function carregarMedicos() {
     try {
-        const response = await fetch(baseUrl);
-        if (!response.ok) throw new Error("Erro ao buscar médicos.");
-        const medicos = await response.json();
+        const response = await axios.get(baseUrl);
+        const medicos = response.data;
         const tbody = document.querySelector("#medicos-table tbody");
         tbody.innerHTML = "";
 
@@ -24,10 +24,11 @@ async function carregarMedicos() {
             tbody.appendChild(tr);
         });
     } catch (err) {
-        alert(err.message);
+        alert("Erro ao carregar médicos: " + err.message);
     }
 }
 
+// adicionar um novo médico (POST)
 async function adicionarMedico(e) {
     e.preventDefault();
     const medico = {
@@ -37,40 +38,39 @@ async function adicionarMedico(e) {
         numeroConsultorio: document.getElementById("consultorio").value
     };
 
-    const response = await fetch(baseUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(medico)
-    });
-
-    if (response.ok) {
+    try {
+        await axios.post(baseUrl, medico);
         alert("Médico adicionado!");
         carregarMedicos();
         document.getElementById("form-medico").reset();
-    } else {
-        alert("Erro ao adicionar médico.");
+    } catch (err) {
+        alert("Erro ao adicionar médico: " + err.message);
     }
 }
 
+// buscar dados do médico e preencher o formulário para edição
 async function editarMedico(id) {
-    const response = await fetch(`${baseUrl}/${id}`);
-    const medico = await response.json();
+    try {
+        const response = await axios.get(`${baseUrl}/${id}`);
+        const medico = response.data;
 
-    document.getElementById("medico-id").value = medico.id;
-    document.getElementById("nome").value = medico.nome;
-    document.getElementById("crm").value = medico.crm;
-    document.getElementById("especialidade").value = medico.especialidade;
-    document.getElementById("consultorio").value = medico.numeroConsultorio;
+        document.getElementById("medico-id").value = medico.id;
+        document.getElementById("nome").value = medico.nome;
+        document.getElementById("crm").value = medico.crm;
+        document.getElementById("especialidade").value = medico.especialidade;
+        document.getElementById("consultorio").value = medico.numeroConsultorio;
 
-    document.getElementById("btn-salvar").textContent = "Atualizar";
+        document.getElementById("btn-salvar").textContent = "Atualizar";
+    } catch (err) {
+        alert("Erro ao carregar médico: " + err.message);
+    }
 }
 
+// atualizar ou adicionar médico, dependendo se tem ID
 async function atualizarMedico(e) {
     e.preventDefault();
 
     const id = document.getElementById("medico-id").value;
-    if (!id) return adicionarMedico(e); // Se não tiver ID, é um POST
-
     const medico = {
         nome: document.getElementById("nome").value,
         crm: document.getElementById("crm").value,
@@ -78,36 +78,30 @@ async function atualizarMedico(e) {
         numeroConsultorio: document.getElementById("consultorio").value
     };
 
-    const response = await fetch(`${baseUrl}/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(medico)
-    });
+    if (!id) return adicionarMedico(e);
 
-    if (response.ok) {
+    try {
+        await axios.put(`${baseUrl}/${id}`, medico);
         alert("Médico atualizado!");
         carregarMedicos();
         document.getElementById("form-medico").reset();
         document.getElementById("btn-salvar").textContent = "Salvar";
-    } else {
-        alert("Erro ao atualizar médico.");
+    } catch (err) {
+        alert("Erro ao atualizar médico: " + err.message);
     }
 }
 
+// excluir médico
 async function excluirMedico(id) {
     if (!confirm("Deseja realmente excluir este médico?")) return;
-    const response = await fetch(`${baseUrl}/${id}`, {
-        method: "DELETE"
-    });
-
-    if (response.ok) {
+    try {
+        await axios.delete(`${baseUrl}/${id}`);
         alert("Médico excluído.");
         carregarMedicos();
-    } else {
-        alert("Erro ao excluir médico.");
+    } catch (err) {
+        alert("Erro ao excluir médico: " + err.message);
     }
 }
 
 document.getElementById("form-medico").addEventListener("submit", atualizarMedico);
-
 window.onload = carregarMedicos;

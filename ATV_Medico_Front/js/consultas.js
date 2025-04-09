@@ -7,18 +7,16 @@ let mapaConsultorios = {};
 async function carregarMapas() {
   try {
     const [medicosResp, pacientesResp] = await Promise.all([
-      fetch(`${baseUrl}/medicos`),
-      fetch(`${baseUrl}/pacientes`),
+      axios.get(`${baseUrl}/medicos`),
+      axios.get(`${baseUrl}/pacientes`)
     ]);
 
-    const [medicos, pacientes] = await Promise.all([
-      medicosResp.json(),
-      pacientesResp.json(),
-    ]);
+    const medicos = medicosResp.data;
+    const pacientes = pacientesResp.data;
 
     medicos.forEach((m) => {
       mapaMedicos[m.id] = m.nome;
-      mapaConsultorios[m.id] = m.numeroConsultorio; // assumindo que médico tem campo "consultorio"
+      mapaConsultorios[m.id] = m.numeroConsultorio; // assumindo esse campo
     });
 
     pacientes.forEach((p) => (mapaPacientes[p.id] = p.nome));
@@ -29,8 +27,8 @@ async function carregarMapas() {
 
 async function carregarConsultas() {
   try {
-    const response = await fetch(`${baseUrl}/consultas`);
-    const consultas = await response.json();
+    const response = await axios.get(`${baseUrl}/consultas`);
+    const consultas = response.data;
     const tbody = document.querySelector('#consultas-table tbody');
     tbody.innerHTML = '';
 
@@ -38,32 +36,18 @@ async function carregarConsultas() {
       const consultorio = mapaConsultorios[consulta.medicoId] || 'Desconhecido';
       const tr = document.createElement('tr');
       tr.innerHTML = `
-                <td>${consulta.id}</td>
-                <td>${mapaMedicos[consulta.medicoId] || 'Desconhecido'} (ID: ${
-        consulta.medicoId
-      })</td>
-                <td>${
-                  mapaPacientes[consulta.pacienteId] || 'Desconhecido'
-                } (ID: ${consulta.pacienteId})</td>
-                <td>${new Date(consulta.dataHora).toLocaleString()}</td>
-                <td>${consultorio}</td>
-                <td>${
-                  consulta.valor ? `R$ ${consulta.valor.toFixed(2)}` : 'N/A'
-                }</td>
-                <td>${
-                  consulta.dataRetorno
-                    ? new Date(consulta.dataRetorno).toLocaleString()
-                    : 'N/A'
-                }</td>
-                <td>
-                    <button onclick="editarConsulta(${
-                      consulta.id
-                    })">Editar</button>
-                    <button onclick="deletarConsulta(${
-                      consulta.id
-                    })">Excluir</button>
-                </td>
-            `;
+        <td>${consulta.id}</td>
+        <td>${mapaMedicos[consulta.medicoId] || 'Desconhecido'} (ID: ${consulta.medicoId})</td>
+        <td>${mapaPacientes[consulta.pacienteId] || 'Desconhecido'} (ID: ${consulta.pacienteId})</td>
+        <td>${new Date(consulta.dataHora).toLocaleString()}</td>
+        <td>${consultorio}</td>
+        <td>${consulta.valor ? `R$ ${consulta.valor.toFixed(2)}` : 'N/A'}</td>
+        <td>${consulta.dataRetorno ? new Date(consulta.dataRetorno).toLocaleString() : 'N/A'}</td>
+        <td>
+          <button onclick="editarConsulta(${consulta.id})">Editar</button>
+          <button onclick="deletarConsulta(${consulta.id})">Excluir</button>
+        </td>
+      `;
       tbody.appendChild(tr);
     });
   } catch (error) {
@@ -71,58 +55,45 @@ async function carregarConsultas() {
   }
 }
 
-document
-  .getElementById('consulta-form')
-  .addEventListener('submit', async (e) => {
-    e.preventDefault();
+document.getElementById('consulta-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    const id = document.getElementById('consulta-id').value;
-    const medicoId = document.getElementById('medico-id').value;
-    const pacienteId = document.getElementById('paciente-id').value;
-    const dataHora = document.getElementById('data-hora').value;
-    const valor = document.getElementById('valor').value;
-    const dataRetorno = document.getElementById('data-retorno').value;
+  const id = document.getElementById('consulta-id').value;
+  const medicoId = document.getElementById('medico-id').value;
+  const pacienteId = document.getElementById('paciente-id').value;
+  const dataHora = document.getElementById('data-hora').value;
+  const valor = document.getElementById('valor').value;
+  const dataRetorno = document.getElementById('data-retorno').value;
 
-    const consulta = {
-      medicoId: parseInt(medicoId),
-      pacienteId: parseInt(pacienteId),
-      dataHora: new Date(dataHora).toISOString(),
-      valor: valor ? parseFloat(valor) : null,
-      dataRetorno: dataRetorno ? new Date(dataRetorno).toISOString() : null,
-    };
+  const consulta = {
+    medicoId: parseInt(medicoId),
+    pacienteId: parseInt(pacienteId),
+    dataHora: new Date(dataHora).toISOString(),
+    valor: valor ? parseFloat(valor) : null,
+    dataRetorno: dataRetorno ? new Date(dataRetorno).toISOString() : null,
+  };
 
-    try {
-      const url = id ? `${baseUrl}/consultas/${id}` : `${baseUrl}/consultas`;
-      const method = id ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method: method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(consulta),
-      });
-
-      if (response.ok) {
-        document.getElementById('mensagem').textContent = id
-          ? 'Consulta atualizada!'
-          : 'Consulta criada!';
-        document.getElementById('consulta-form').reset();
-        document.getElementById('consulta-id').value = '';
-        carregarConsultas();
-      } else {
-        const erro = await response.text();
-        throw new Error(erro);
-      }
-    } catch (error) {
-      document.getElementById('mensagem').textContent =
-        'Erro: ' + error.message;
+  try {
+    if (id) {
+      await axios.put(`${baseUrl}/consultas/${id}`, consulta);
+      document.getElementById('mensagem').textContent = 'Consulta atualizada!';
+    } else {
+      await axios.post(`${baseUrl}/consultas`, consulta);
+      document.getElementById('mensagem').textContent = 'Consulta criada!';
     }
-  });
+
+    document.getElementById('consulta-form').reset();
+    document.getElementById('consulta-id').value = '';
+    carregarConsultas();
+  } catch (error) {
+    document.getElementById('mensagem').textContent = 'Erro: ' + (error.response?.data || error.message);
+  }
+});
 
 async function editarConsulta(id) {
   try {
-    const response = await fetch(`${baseUrl}/consultas/${id}`);
-    if (!response.ok) throw new Error('Consulta não encontrada.');
-    const consulta = await response.json();
+    const response = await axios.get(`${baseUrl}/consultas/${id}`);
+    const consulta = response.data;
 
     document.getElementById('consulta-id').value = consulta.id;
     document.getElementById('medico-id').value = consulta.medico.id;
@@ -133,11 +104,9 @@ async function editarConsulta(id) {
       ? consulta.dataRetorno.slice(0, 16)
       : '';
 
-    document.getElementById('mensagem').textContent =
-      'Editando consulta ID ' + id;
+    document.getElementById('mensagem').textContent = 'Editando consulta ID ' + id;
   } catch (error) {
-    document.getElementById('mensagem').textContent =
-      'Erro ao carregar consulta: ' + error.message;
+    document.getElementById('mensagem').textContent = 'Erro ao carregar consulta: ' + (error.response?.data || error.message);
   }
 }
 
@@ -145,15 +114,11 @@ async function deletarConsulta(id) {
   if (!confirm('Deseja realmente excluir esta consulta?')) return;
 
   try {
-    const response = await fetch(`${baseUrl}/consultas/${id}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) throw new Error('Erro ao excluir consulta');
+    await axios.delete(`${baseUrl}/consultas/${id}`);
     carregarConsultas();
-    document.getElementById('mensagem').textContent =
-      'Consulta excluída com sucesso.';
+    document.getElementById('mensagem').textContent = 'Consulta excluída com sucesso.';
   } catch (error) {
-    document.getElementById('mensagem').textContent = 'Erro: ' + error.message;
+    document.getElementById('mensagem').textContent = 'Erro: ' + (error.response?.data || error.message);
   }
 }
 
