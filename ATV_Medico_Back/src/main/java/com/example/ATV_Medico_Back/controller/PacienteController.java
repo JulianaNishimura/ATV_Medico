@@ -1,6 +1,7 @@
 package com.example.ATV_Medico_Back.controller;
 
-import com.example.ATV_Medico_Back.model.Paciente;
+import com.example.ATV_Medico_Back.dto.PacienteDTO;
+import com.example.ATV_Medico_Back.dto.PacienteComConsultasDTO;
 import com.example.ATV_Medico_Back.service.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +18,22 @@ public class PacienteController {
 
     // GET: Retorna a lista de todos os pacientes
     @GetMapping
-    public ResponseEntity<List<Paciente>> listarPacientes() {
-        List<Paciente> pacientes = pacienteService.listarTodos();
+    public ResponseEntity<List<PacienteDTO>> listarPacientes() {
+        List<PacienteDTO> pacientes = pacienteService.listarTodos();
         return ResponseEntity.ok(pacientes);
+    }
+
+    // ✅ NOVO ENDPOINT: Lista todos os pacientes com suas consultas
+    @GetMapping("/com-consultas")
+    public ResponseEntity<List<PacienteComConsultasDTO>> listarPacientesComConsultas() {
+        return ResponseEntity.ok(pacienteService.listarPacientesComConsultas());
     }
 
     // POST: Cria um novo paciente
     @PostMapping
-    public ResponseEntity<String> criarPaciente(@RequestBody Paciente paciente) {
+    public ResponseEntity<String> criarPaciente(@RequestBody PacienteDTO pacienteDTO) {
         try {
-            String resultado = pacienteService.salvarPaciente(paciente);
+            String resultado = pacienteService.salvarPaciente(pacienteDTO);
             return ResponseEntity.ok(resultado);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -35,9 +42,9 @@ public class PacienteController {
 
     // PUT: Atualiza um paciente existente
     @PutMapping("/{id}")
-    public ResponseEntity<String> atualizarPaciente(@PathVariable Long id, @RequestBody Paciente paciente) {
+    public ResponseEntity<String> atualizarPaciente(@PathVariable Long id, @RequestBody PacienteDTO pacienteDTO) {
         try {
-            String resultado = pacienteService.atualizarPaciente(id, paciente);
+            String resultado = pacienteService.atualizarPaciente(id, pacienteDTO);
             return ResponseEntity.ok(resultado);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

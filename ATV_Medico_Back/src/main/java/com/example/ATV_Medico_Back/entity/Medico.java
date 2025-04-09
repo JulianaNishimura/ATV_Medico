@@ -1,20 +1,13 @@
-package com.example.ATV_Medico_Back.model;
+package com.example.ATV_Medico_Back.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "medicos")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class Medico {
 
     @Id
@@ -25,6 +18,7 @@ public class Medico {
     private Integer numeroConsultorio; // RQ1
 
     @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Consulta> consultas = new ArrayList<>();
 
     @Column(name = "nome", nullable = false)

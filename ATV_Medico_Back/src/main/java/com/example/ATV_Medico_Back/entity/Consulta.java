@@ -1,14 +1,11 @@
-package com.example.ATV_Medico_Back.model;
+package com.example.ATV_Medico_Back.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "consulta")
-@Getter
-@Setter
+@Data
 public class Consulta {
 
     @Id
@@ -31,4 +28,5 @@ public class Consulta {
 
     @Column(name = "data_retorno")
     private LocalDateTime dataRetorno; // RQ5: Agendar retornos
+
 }

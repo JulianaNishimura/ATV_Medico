@@ -1,19 +1,15 @@
-package com.example.ATV_Medico_Back.model;
+package com.example.ATV_Medico_Back.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "paciente")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class Paciente {
 
     @Id
@@ -30,4 +26,11 @@ public class Paciente {
     @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
 
+    @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Consulta> consultas = new ArrayList<>();
+
+    public void adicionarConsulta(Consulta consulta) {
+        consultas.add(consulta);
+    }
 }

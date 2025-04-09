@@ -1,6 +1,7 @@
 package com.example.ATV_Medico_Back.controller;
 
 import com.example.ATV_Medico_Back.dto.MedicoDTO;
+import com.example.ATV_Medico_Back.dto.MedicoComConsultasDTO;
 import com.example.ATV_Medico_Back.service.MedicoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,19 +16,23 @@ public class MedicoController {
     @Autowired
     private MedicoService medicoService;
 
-    // GET: Retorna a lista de médicos
+    // GET: Lista todos os médicos (dados básicos)
     @GetMapping
     public ResponseEntity<List<MedicoDTO>> listarMedicos() {
-        List<MedicoDTO> medicos = medicoService.listarTodos();
-        return ResponseEntity.ok(medicos);
+        return ResponseEntity.ok(medicoService.listarTodos());
+    }
+
+    // GET: Lista todos os médicos com consultas e pacientes
+    @GetMapping("/com-consultas")
+    public ResponseEntity<List<MedicoComConsultasDTO>> listarMedicosComConsultas() {
+        return ResponseEntity.ok(medicoService.listarMedicosComConsultas());
     }
 
     // POST: Cria um novo médico
     @PostMapping
     public ResponseEntity<String> criarMedico(@RequestBody MedicoDTO medicoDTO) {
         try {
-            String resultado = medicoService.salvarMedico(medicoDTO);
-            return ResponseEntity.ok(resultado);
+            return ResponseEntity.ok(medicoService.salvarMedico(medicoDTO));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -37,8 +42,7 @@ public class MedicoController {
     @PutMapping("/{id}")
     public ResponseEntity<String> atualizarMedico(@PathVariable Long id, @RequestBody MedicoDTO medicoDTO) {
         try {
-            String resultado = medicoService.atualizarMedico(id, medicoDTO);
-            return ResponseEntity.ok(resultado);
+            return ResponseEntity.ok(medicoService.atualizarMedico(id, medicoDTO));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -48,8 +52,7 @@ public class MedicoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletarMedico(@PathVariable Long id) {
         try {
-            String resultado = medicoService.deletarMedico(id);
-            return ResponseEntity.ok(resultado);
+            return ResponseEntity.ok(medicoService.deletarMedico(id));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -59,8 +62,7 @@ public class MedicoController {
     @PostMapping("/{id}/pacientes")
     public ResponseEntity<String> adicionarPaciente(@PathVariable Long id, @RequestParam Long pacienteId) {
         try {
-            String resultado = medicoService.adicionarPaciente(id, pacienteId);
-            return ResponseEntity.ok(resultado);
+            return ResponseEntity.ok(medicoService.adicionarPaciente(id, pacienteId));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

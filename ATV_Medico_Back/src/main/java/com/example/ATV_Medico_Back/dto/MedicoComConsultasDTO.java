@@ -1,18 +1,24 @@
 package com.example.ATV_Medico_Back.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data // Gera getters, setters, toString, equals e hashCode
+import java.util.List;
+
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MedicoDTO {
+public class MedicoComConsultasDTO {
     private Long id;
-
     private String nome;
     private String especialidade;
     private Integer numeroConsultorio;
     private Double salario;
     private String crm;
-    // Getters e Setters
+
+    private List<ConsultaDTO> consultas;
+    private List<PacienteDTO> pacientes;
+
 }
+
