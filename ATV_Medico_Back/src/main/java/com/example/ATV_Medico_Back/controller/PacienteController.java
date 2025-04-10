@@ -23,10 +23,22 @@ public class PacienteController {
         return ResponseEntity.ok(pacientes);
     }
 
-    // ✅ NOVO ENDPOINT: Lista todos os pacientes com suas consultas
+    @GetMapping("/cpf/{cpf}")
+    public ResponseEntity<PacienteComConsultasDTO> buscarPorCpf(@PathVariable String cpf) {
+        try {
+            return ResponseEntity.ok(pacienteService.buscarPorCpf(cpf));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
     @GetMapping("/com-consultas")
     public ResponseEntity<List<PacienteComConsultasDTO>> listarPacientesComConsultas() {
-        return ResponseEntity.ok(pacienteService.listarPacientesComConsultas());
+        try {
+            return ResponseEntity.ok(pacienteService.listarPacientesComConsultas());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null); // Retorna status 500 com corpo nulo
+        }
     }
 
     // POST: Cria um novo paciente

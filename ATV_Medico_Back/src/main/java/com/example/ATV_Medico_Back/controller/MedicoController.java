@@ -22,10 +22,25 @@ public class MedicoController {
         return ResponseEntity.ok(medicoService.listarTodos());
     }
 
-    // GET: Lista todos os médicos com consultas e pacientes
     @GetMapping("/com-consultas")
     public ResponseEntity<List<MedicoComConsultasDTO>> listarMedicosComConsultas() {
-        return ResponseEntity.ok(medicoService.listarMedicosComConsultas());
+        try {
+            return ResponseEntity.ok(medicoService.listarMedicosComConsultas());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null); // Retorna status 500 com corpo nulo
+        }
+    }
+
+    // GET: Busca um médico por CRM
+    @GetMapping("/crm/{crm}")
+    public ResponseEntity<MedicoComConsultasDTO> buscarPorCrm(@PathVariable String crm) {
+        try {
+            return ResponseEntity.ok(medicoService.buscarPorCrm(crm));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null); // Retorna 400 para CRM não encontrado
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null); // Retorna 500 para outros erros
+        }
     }
 
     // POST: Cria um novo médico

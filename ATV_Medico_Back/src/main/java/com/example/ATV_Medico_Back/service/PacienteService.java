@@ -34,6 +34,12 @@ public class PacienteService {
                 .collect(Collectors.toList());
     }
 
+    public PacienteComConsultasDTO buscarPorCpf(String cpf) {
+        Paciente paciente = pacienteRepository.findByCpf(cpf)
+                .orElseThrow(() -> new IllegalArgumentException("Paciente com CPF " + cpf + " não encontrado."));
+        return toPacienteComConsultasDTO(paciente);
+    }
+
     public String salvarPaciente(PacienteDTO dto) {
         validarPaciente(dto, true);
         pacienteRepository.save(toEntity(dto));

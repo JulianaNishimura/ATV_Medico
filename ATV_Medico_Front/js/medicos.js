@@ -16,9 +16,10 @@ async function carregarMedicos() {
                 <td>${medico.crm}</td>
                 <td>${medico.especialidade}</td>
                 <td>${medico.numeroConsultorio}</td>
+                <td>${medico.salario ? medico.salario.toFixed(2) : '0.00'}</td>
                 <td>
-                    <button onclick="editarMedico(${medico.id})">✏️</button>
-                    <button onclick="excluirMedico(${medico.id})">🗑️</button>
+                    <button onclick="editarMedico(${medico.id}, '${medico.nome}', '${medico.crm}', '${medico.especialidade}', '${medico.numeroConsultorio}', ${medico.salario})">✏️Editar</button>
+                    <button onclick="excluirMedico(${medico.id})">🗑️Excluir</button>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -34,7 +35,8 @@ async function adicionarMedico(e) {
         nome: document.getElementById("nome").value,
         crm: document.getElementById("crm").value,
         especialidade: document.getElementById("especialidade").value,
-        numeroConsultorio: document.getElementById("consultorio").value
+        numeroConsultorio: document.getElementById("consultorio").value,
+        salario: parseFloat(document.getElementById("salario").value) || 0
     };
 
     const response = await fetch(baseUrl, {
@@ -47,22 +49,28 @@ async function adicionarMedico(e) {
         alert("Médico adicionado!");
         carregarMedicos();
         document.getElementById("form-medico").reset();
+        resetForm();
     } else {
         alert("Erro ao adicionar médico.");
     }
 }
 
-async function editarMedico(id) {
-    const response = await fetch(`${baseUrl}/${id}`);
-    const medico = await response.json();
+function editarMedico(id, nome, crm, especialidade, numeroConsultorio, salario) {
+    // Preenche os campos com os dados da tabela
+    document.getElementById("medico-id").value = id;
+    document.getElementById("nome").value = nome;
+    document.getElementById("crm").value = crm;
+    document.getElementById("especialidade").value = especialidade || '';
+    document.getElementById("consultorio").value = numeroConsultorio || '';
+    document.getElementById("salario").value = salario || '';
 
-    document.getElementById("medico-id").value = medico.id;
-    document.getElementById("nome").value = medico.nome;
-    document.getElementById("crm").value = medico.crm;
-    document.getElementById("especialidade").value = medico.especialidade;
-    document.getElementById("consultorio").value = medico.numeroConsultorio;
+    // Muda o botão para "Atualizar" e altera a cor
+    const btnSalvar = document.getElementById("btn-salvar");
+    btnSalvar.textContent = "Atualizar";
+    btnSalvar.classList.add("btn-atualizar");
 
-    document.getElementById("btn-salvar").textContent = "Atualizar";
+    // Mostra o botão "Cancelar"
+    document.getElementById("btn-cancelar").style.display = "inline-block";
 }
 
 async function atualizarMedico(e) {
@@ -75,7 +83,8 @@ async function atualizarMedico(e) {
         nome: document.getElementById("nome").value,
         crm: document.getElementById("crm").value,
         especialidade: document.getElementById("especialidade").value,
-        numeroConsultorio: document.getElementById("consultorio").value
+        numeroConsultorio: document.getElementById("consultorio").value,
+        salario: parseFloat(document.getElementById("salario").value) || 0
     };
 
     const response = await fetch(`${baseUrl}/${id}`, {
@@ -88,7 +97,7 @@ async function atualizarMedico(e) {
         alert("Médico atualizado!");
         carregarMedicos();
         document.getElementById("form-medico").reset();
-        document.getElementById("btn-salvar").textContent = "Salvar";
+        resetForm();
     } else {
         alert("Erro ao atualizar médico.");
     }
@@ -108,6 +117,14 @@ async function excluirMedico(id) {
     }
 }
 
-document.getElementById("form-medico").addEventListener("submit", atualizarMedico);
+function resetForm() {
+    const btnSalvar = document.getElementById("btn-salvar");
+    btnSalvar.textContent = "Salvar";
+    btnSalvar.classList.remove("btn-atualizar");
+    document.getElementById("btn-cancelar").style.display = "none";
+    document.getElementById("medico-id").value = "";
+    document.getElementById("form-medico").reset();
+}
 
+document.getElementById("form-medico").addEventListener("submit", atualizarMedico);
 window.onload = carregarMedicos;

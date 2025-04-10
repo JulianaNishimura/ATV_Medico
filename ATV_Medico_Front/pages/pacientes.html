@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pacientes - Gestão Médica</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <script src="../js/pacientes.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1>Gestão Médica - Pacientes</h1>
+      <a href="../index.html" class="btn-voltar"
+        ><i class="fas fa-arrow-left"></i> Voltar ao Início</a
+      >
+    </header>
+    <main>
+      <section>
+        <h2>Cadastro / Edição de Paciente</h2>
+        <form id="paciente-form">
+          <input type="hidden" id="paciente-id" />
+
+          <label for="paciente-nome">Nome:</label>
+          <input type="text" id="paciente-nome" required />
+
+          <label for="paciente-cpf">CPF:</label>
+          <input type="text" id="paciente-cpf" required />
+
+          <label for="paciente-data-nascimento">Data de Nascimento:</label>
+          <input type="date" id="paciente-data-nascimento" required />
+
+          <div class="form-buttons">
+            <button id="btn-salvar" type="submit">Salvar</button>
+            <button
+              id="btn-cancelar"
+              type="button"
+              onclick="resetForm()"
+              style="display: none"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+
+        <p id="mensagem"></p>
+      </section>
+
+      <section>
+        <h2>Lista de Pacientes</h2>
+        <table id="pacientes-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>CPF</th>
+              <th>Idade</th>
+              <th>Último médico</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </main>
+    <footer>
+      <p>© 2025 Gestão Médica. Todos os direitos reservados.</p>
+    </footer>
+  </body>
+</html>

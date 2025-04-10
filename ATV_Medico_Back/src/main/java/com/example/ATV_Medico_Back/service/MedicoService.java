@@ -33,6 +33,14 @@ public class MedicoService {
                 .collect(Collectors.toList());
     }
 
+    public MedicoComConsultasDTO buscarPorCrm(String crm) {
+        Medico medico = medicoRepository.findByCrm(crm);
+        if (medico == null) {
+            throw new IllegalArgumentException("Médico com CRM " + crm + " não encontrado.");
+        }
+        return toDTOConsulta(medico);
+    }
+
     public String salvarMedico(MedicoDTO dto) {
         validarCrm(dto.getCrm());
         medicoRepository.save(toEntity(dto));

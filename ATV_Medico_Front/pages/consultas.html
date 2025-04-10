@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultas - Gestão Médica</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/consultas.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Gestão Médica - Consultas</h1>
+        <a href="../index.html" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar ao Início</a>
+    </header>
+    <main>
+        <section>
+            <h2>Cadastro / Edição de Consulta</h2>
+            <form id="consulta-form">
+                <input type="hidden" id="consulta-id">
+
+                <label for="medico-id">ID do Médico:</label>
+                <input type="number" id="medico-id" required>
+
+                <label for="paciente-id">ID do Paciente:</label>
+                <input type="number" id="paciente-id" required>
+
+                <label for="data-hora">Data e Hora:</label>
+                <input type="datetime-local" id="data-hora" required>
+
+                <label for="valor">Valor:</label>
+                <input type="number" id="valor" step="0.01">
+
+                <label for="data-retorno">Data de Retorno:</label>
+                <input type="datetime-local" id="data-retorno">
+
+                <div class="form-buttons">
+                    <button id="btn-salvar" type="submit">Salvar Consulta</button>
+                    <button id="btn-cancelar" type="button" onclick="resetForm()" style="display: none;">Cancelar</button>
+                </div>
+            </form>
+            <p id="mensagem"></p>
+        </section>
+
+        <section>
+            <h2>Lista de Consultas</h2>
+            <table id="consultas-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Médico</th>
+                        <th>Paciente</th>
+                        <th>Data/Hora</th>
+                        <th>Consultório</th>
+                        <th>Valor</th>
+                        <th>Retorno</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </main>
+    <footer>
+        <p>© 2025 Gestão Médica. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>

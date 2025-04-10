@@ -2,7 +2,7 @@ const baseUrl = 'http://localhost:8080/api';
 
 async function carregarPacientes() {
   try {
-    // 🔹 Carrega todos os médicos primeiro
+    // Carrega todos os médicos primeiro
     const resMedicos = await fetch(`${baseUrl}/medicos`);
     const medicos = resMedicos.ok ? await resMedicos.json() : [];
 
@@ -17,20 +17,13 @@ async function carregarPacientes() {
       let nomeMedico = 'Sem médico ainda';
 
       try {
-        const resConsultas = await fetch(
-          `${baseUrl}/consultas/paciente/${paciente.id}`
-        );
+        const resConsultas = await fetch(`${baseUrl}/consultas/paciente/${paciente.id}`);
         if (resConsultas.ok) {
           const consultas = await resConsultas.json();
 
           if (consultas.length > 0) {
-            consultas.sort(
-              (a, b) => new Date(b.dataHora) - new Date(a.dataHora)
-            );
-
+            consultas.sort((a, b) => new Date(b.dataHora) - new Date(a.dataHora));
             const medicoId = consultas[0].medicoId;
-
-            // 🔹 Busca localmente o médico pelo ID
             const medico = medicos.find((m) => m.id === medicoId);
             if (medico) {
               nomeMedico = `${medico.nome} (ID: ${medico.id})`;
@@ -43,18 +36,16 @@ async function carregarPacientes() {
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
-                <td>${paciente.id}</td>
-                <td>${paciente.nome}</td>
-                <td>${paciente.cpf}</td>
-                <td>${calcularIdade(paciente.dataNascimento)} anos</td>
-                <td>${nomeMedico}</td>
-                <td>
-                    <button onclick="editarPaciente(${paciente.id})">✏️</button>
-                    <button onclick="deletarPaciente(${
-                      paciente.id
-                    })">🗑️</button>
-                </td>
-            `;
+        <td>${paciente.id}</td>
+        <td>${paciente.nome}</td>
+        <td>${paciente.cpf}</td>
+        <td>${calcularIdade(paciente.dataNascimento)} anos</td>
+        <td>${nomeMedico}</td>
+        <td>
+          <button onclick="editarPaciente(${paciente.id}, '${paciente.nome}', '${paciente.cpf}', '${paciente.dataNascimento}')">✏️Editar</button>
+          <button onclick="deletarPaciente(${paciente.id})">🗑️Excluir</button>
+        </td>
+      `;
       tbody.appendChild(tr);
     }
   } catch (error) {
@@ -62,73 +53,60 @@ async function carregarPacientes() {
   }
 }
 
-document
-  .getElementById('paciente-form')
-  .addEventListener('submit', async (e) => {
-    e.preventDefault();
+document.getElementById('paciente-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    // Adiciona isso aqui:
-    const id = document.getElementById('paciente-id').value;
-    const nome = document.getElementById('paciente-nome').value;
-    const cpf = document.getElementById('paciente-cpf').value;
-    const dataNascimento = document.getElementById(
-      'paciente-data-nascimento'
-    ).value;
+  const id = document.getElementById('paciente-id').value;
+  const nome = document.getElementById('paciente-nome').value;
+  const cpf = document.getElementById('paciente-cpf').value;
+  const dataNascimento = document.getElementById('paciente-data-nascimento').value;
 
-    const paciente = {
-      nome,
-      cpf,
-      dataNascimento,
-    };
+  const paciente = { nome, cpf, dataNascimento };
 
-    try {
-      let method = 'POST';
-      let url = `${baseUrl}/pacientes`;
-
-      if (id) {
-        method = 'PUT';
-        url += `/${id}`;
-      }
-
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(paciente),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Erro ao salvar paciente.');
-      }
-      document.getElementById('mensagem').textContent = id
-        ? 'Paciente atualizado!'
-        : 'Paciente cadastrado!';
-      document.getElementById('paciente-form').reset();
-      carregarPacientes();
-    } catch (error) {
-      document.getElementById('mensagem').textContent =
-        'Erro: ' + error.message;
-    }
-  });
-
-// PUT: Carregar dados para edição
-async function editarPaciente(id) {
   try {
-    const response = await fetch(`${baseUrl}/pacientes/${id}`);
-    if (!response.ok) throw new Error('Erro ao buscar paciente.');
-    const paciente = await response.json();
+    let method = 'POST';
+    let url = `${baseUrl}/pacientes`;
 
-    document.getElementById('paciente-id').value = paciente.id;
-    document.getElementById('paciente-nome').value = paciente.nome;
-    document.getElementById('paciente-cpf').value = paciente.cpf;
-    document.getElementById('paciente-data-nascimento').value =
-      paciente.dataNascimento;
+    if (id) {
+      method = 'PUT';
+      url += `/${id}`;
+    }
+
+    const response = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(paciente),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Erro ao salvar paciente.');
+    }
+    document.getElementById('mensagem').textContent = id ? 'Paciente atualizado!' : 'Paciente cadastrado!';
+    document.getElementById('paciente-form').reset();
+    resetForm();
+    carregarPacientes();
   } catch (error) {
-    console.error('Erro ao carregar paciente:', error.message);
+    document.getElementById('mensagem').textContent = 'Erro: ' + error.message;
   }
+});
+
+function editarPaciente(id, nome, cpf, dataNascimento) {
+  // Preenche os campos com os dados da tabela
+  document.getElementById('paciente-id').value = id;
+  document.getElementById('paciente-nome').value = nome;
+  document.getElementById('paciente-cpf').value = cpf;
+  document.getElementById('paciente-data-nascimento').value = dataNascimento;
+
+  // Muda o botão para "Atualizar" e altera a cor
+  const btnSalvar = document.getElementById('btn-salvar');
+  btnSalvar.textContent = "Atualizar";
+  btnSalvar.classList.add('btn-atualizar');
+
+  // Mostra o botão "Cancelar"
+  document.getElementById('btn-cancelar').style.display = 'inline-block';
 }
 
-// DELETE: Remover paciente
 async function deletarPaciente(id) {
   if (!confirm('Tem certeza que deseja deletar este paciente?')) return;
 
@@ -154,7 +132,16 @@ function calcularIdade(dataNascimento) {
   return idade;
 }
 
-// Ao carregar a página
+function resetForm() {
+  const btnSalvar = document.getElementById('btn-salvar');
+  btnSalvar.textContent = "Salvar";
+  btnSalvar.classList.remove('btn-atualizar');
+  document.getElementById('btn-cancelar').style.display = 'none';
+  document.getElementById('paciente-id').value = "";
+  document.getElementById('paciente-form').reset();
+  document.getElementById('mensagem').textContent = '';
+}
+
 window.onload = async () => {
   carregarPacientes();
 };
