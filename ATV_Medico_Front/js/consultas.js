@@ -17,11 +17,13 @@ async function carregarMapas() {
     ]);
 
     medicos.forEach((m) => {
-      mapaMedicos[m.id] = m.nome;
-      mapaConsultorios[m.id] = m.numeroConsultorio; // assumindo que médico tem campo "numeroConsultorio"
+      mapaMedicos[m.id] = { nome: m.nome, crm: m.crm };
+      mapaConsultorios[m.id] = m.numeroConsultorio;
     });
 
-    pacientes.forEach((p) => (mapaPacientes[p.id] = p.nome));
+    pacientes.forEach((p) => {
+      mapaPacientes[p.id] = { nome: p.nome, cpf: p.cpf };
+    });
   } catch (error) {
     console.error('Erro ao carregar médicos ou pacientes:', error);
   }
@@ -35,17 +37,20 @@ async function carregarConsultas() {
     tbody.innerHTML = '';
 
     consultas.forEach((consulta) => {
+      const medico = mapaMedicos[consulta.medicoId] || { nome: 'Desconhecido', crm: 'N/A' };
+      const paciente = mapaPacientes[consulta.pacienteId] || { nome: 'Desconhecido', cpf: 'N/A' };
       const consultorio = mapaConsultorios[consulta.medicoId] || 'Desconhecido';
+
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${consulta.id}</td>
-        <td>${mapaMedicos[consulta.medicoId] || 'Desconhecido'} (ID: ${consulta.medicoId})</td>
-        <td>${mapaPacientes[consulta.pacienteId] || 'Desconhecido'} (ID: ${consulta.pacienteId})</td>
+        <td>${medico.nome} (CRM: ${medico.crm})</td>
+        <td>${paciente.nome} (CPF: ${paciente.cpf})</td>
         <td>${new Date(consulta.dataHora).toLocaleString()}</td>
         <td>${consultorio}</td>
         <td>${consulta.valor ? `R$ ${consulta.valor.toFixed(2)}` : 'N/A'}</td>
         <td>${consulta.dataRetorno ? new Date(consulta.dataRetorno).toLocaleString() : 'N/A'}</td>
-        <td>
+        <td class="botoes-acoes">
           <button onclick="editarConsulta(${consulta.id}, ${consulta.medicoId}, ${consulta.pacienteId}, '${consulta.dataHora}', ${consulta.valor || 'null'}, '${consulta.dataRetorno || ''}')">✏️Editar</button>
           <button onclick="deletarConsulta(${consulta.id})">🗑️Excluir</button>
         </td>
@@ -76,31 +81,35 @@ document.getElementById('consulta-form').addEventListener('submit', async (e) =>
   };
 
   try {
-    const url = id ? `${baseUrl}/consultas/${id}` : `${baseUrl}/consultas`;
-    const method = id ? 'PUT' : 'POST';
+    let method = 'POST';
+    let url = `${baseUrl}/consultas`;
+
+    if (id) {
+      method = 'PUT';
+      url += `/${id}`;
+    }
 
     const response = await fetch(url, {
-      method: method,
+      method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(consulta),
     });
 
-    if (response.ok) {
-      document.getElementById('mensagem').textContent = id ? 'Consulta atualizada!' : 'Consulta criada!';
-      document.getElementById('consulta-form').reset();
-      resetForm();
-      carregarConsultas();
-    } else {
-      const erro = await response.text();
-      throw new Error(erro);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Erro ao salvar consulta.');
     }
+
+    document.getElementById('mensagem').textContent = id ? 'Consulta atualizada com sucesso!' : 'Consulta cadastrada com sucesso!';
+    document.getElementById('consulta-form').reset();
+    resetForm();
+    carregarConsultas();
   } catch (error) {
     document.getElementById('mensagem').textContent = 'Erro: ' + error.message;
   }
 });
 
 function editarConsulta(id, medicoId, pacienteId, dataHora, valor, dataRetorno) {
-  // Preenche os campos com os dados da tabela
   document.getElementById('consulta-id').value = id;
   document.getElementById('medico-id').value = medicoId;
   document.getElementById('paciente-id').value = pacienteId;
@@ -108,14 +117,10 @@ function editarConsulta(id, medicoId, pacienteId, dataHora, valor, dataRetorno) 
   document.getElementById('valor').value = valor || '';
   document.getElementById('data-retorno').value = dataRetorno ? dataRetorno.slice(0, 16) : '';
 
-  // Muda o botão para "Atualizar" e altera a cor
   const btnSalvar = document.getElementById('btn-salvar');
   btnSalvar.textContent = "Atualizar";
   btnSalvar.classList.add('btn-atualizar');
-
-  // Mostra o botão "Cancelar"
   document.getElementById('btn-cancelar').style.display = 'inline-block';
-
   document.getElementById('mensagem').textContent = 'Editando consulta ID ' + id;
 }
 

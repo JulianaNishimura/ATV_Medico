@@ -32,6 +32,15 @@ public class PacienteController {
         }
     }
 
+    @GetMapping("/id/{id}")
+    public ResponseEntity<PacienteComConsultasDTO> buscarPorId(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(pacienteService.buscarPorId(id));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
     @GetMapping("/com-consultas")
     public ResponseEntity<List<PacienteComConsultasDTO>> listarPacientesComConsultas() {
         try {

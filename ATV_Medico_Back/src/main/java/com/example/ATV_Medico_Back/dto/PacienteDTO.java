@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class PacienteDTO {
     private Long id;
-    private String cpf;
     private String nome;
+    private String cpf;
     private LocalDate dataNascimento;
 }

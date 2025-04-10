@@ -112,7 +112,6 @@ table th,
 table td {
   padding: 12px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
   min-width: 100px;
 }
 
@@ -120,6 +119,14 @@ table th {
   background-color: #0066cc;
   color: #fff;
   font-weight: bold;
+}
+
+table tr {
+  border-bottom: 1px solid #ddd;
+}
+
+table tr:last-child {
+  border-bottom: none;
 }
 
 table tr:hover {
@@ -133,12 +140,25 @@ table td button {
   padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
-  margin-right: 5px;
   transition: background-color 0.3s ease;
 }
 
 table td button:hover {
   background-color: #004999;
+}
+
+/* Estilização dos botões de ações */
+.botoes-acoes {
+  display: flex;
+  gap: 10px; /* Aumentei o espaço entre os botões */
+  align-items: center; /* Mantém os botões centralizados verticalmente */
+}
+
+.botoes-acoes button {
+  width: 70px; /* Aumentei a largura para 70px */
+  padding: 8px 0; /* Aumentei o padding vertical para 8px */
+  text-align: center; /* Centraliza o conteúdo (emojis) */
+  font-size: 1rem; /* Garante que o tamanho da fonte seja consistente */
 }
 
 /* Formulários */
@@ -216,28 +236,67 @@ footer {
 
 /* Animações */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* Responsividade */
 @media (max-width: 600px) {
-  header h1 { font-size: 1.8rem; }
-  header p { font-size: 0.9rem; }
-  main { padding: 20px; }
-  section h2, .menu-section h2 { font-size: 1.5rem; }
-  .menu-list li { padding: 12px; }
-  .menu-list a { font-size: 1rem; }
-  table { font-size: 0.9rem; }
-  table th, table td { padding: 8px; }
-  form { padding: 15px; }
-  form input, form button { font-size: 0.9rem; }
-  .form-buttons { flex-direction: column; }
+  header h1 {
+    font-size: 1.8rem;
+  }
+  header p {
+    font-size: 0.9rem;
+  }
+  main {
+    padding: 20px;
+  }
+  section h2,
+  .menu-section h2 {
+    font-size: 1.5rem;
+  }
+  .menu-list li {
+    padding: 12px;
+  }
+  .menu-list a {
+    font-size: 1rem;
+  }
+  table {
+    font-size: 0.9rem;
+  }
+  table th,
+  table td {
+    padding: 8px;
+  }
+  form {
+    padding: 15px;
+  }
+  form input,
+  form button {
+    font-size: 0.9rem;
+  }
+  .form-buttons {
+    flex-direction: column;
+  }
+  .botoes-acoes button {
+    width: 60px; /* Ajustei para 60px em telas menores */
+    padding: 6px 0; /* Ajustei o padding para telas menores */
+  }
 }
 
 /* Botão Voltar */
@@ -270,5 +329,9 @@ footer {
 }
 
 @media (max-width: 600px) {
-  .btn-voltar { padding: 8px 12px; font-size: 0.9rem; left: 15px; }
+  .btn-voltar {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    left: 15px;
+  }
 }

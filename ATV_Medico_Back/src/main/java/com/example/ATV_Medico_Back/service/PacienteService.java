@@ -40,6 +40,12 @@ public class PacienteService {
         return toPacienteComConsultasDTO(paciente);
     }
 
+    public PacienteComConsultasDTO buscarPorId(Long id) {
+        Paciente paciente = pacienteRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Paciente com id " + id + " não encontrado."));
+        return toPacienteComConsultasDTO(paciente);
+    }
+
     public String salvarPaciente(PacienteDTO dto) {
         validarPaciente(dto, true);
         pacienteRepository.save(toEntity(dto));
